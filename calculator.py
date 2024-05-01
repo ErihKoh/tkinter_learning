@@ -1,13 +1,5 @@
 import tkinter as tk
-
-root = tk.Tk()
-root.geometry(f"240x270+100+200")
-root['bg'] = '#33ffe6'
-root.title('Calculator')
-
-calc = tk.Entry(root, justify=tk.RIGHT, font=('Arial', 15), width=15)
-calc.insert(0, '0')
-calc.grid(row=0, column=0, columnspan=4, stick='we', padx=5)
+from tkinter import messagebox
 
 
 def add_digit(digit):
@@ -39,7 +31,15 @@ def calculate():
         value = value + value[:-1]
 
     calc.delete(0, tk.END)
-    calc.insert(0, eval(value))
+
+    try:
+        calc.insert(0, eval(value))
+    except (NameError, SyntaxError):
+        messagebox.showinfo('Error', 'Only digit')
+        calc.insert(0, '0')
+    except ZeroDivisionError:
+        messagebox.showinfo('Error', 'ZeroDivisionError')
+        calc.insert(0, '0')
 
 
 def clear():
@@ -58,6 +58,25 @@ def make_clear_button(operation):
 def make_operation_button(operation):
     return tk.Button(text=operation, bd=5, font=('Arial', 13), fg='red', command=lambda: add_operation(operation))
 
+
+def press_key(event):
+    if event.char.isdigit():
+        add_digit(event.char)
+    elif event.char in '+-/*':
+        add_operation(event.char)
+    elif event.char == '\r':
+        calculate()
+
+
+root = tk.Tk()
+root.geometry(f"240x270+100+200")
+root['bg'] = '#33ffe6'
+root.title('Calculator')
+root.bind('<Key>', press_key)
+
+calc = tk.Entry(root, justify=tk.RIGHT, font=('Arial', 15), width=15)
+calc.insert(0, '0')
+calc.grid(row=0, column=0, columnspan=4, stick='we', padx=5)
 
 make_digit_button('1').grid(row=1, column=0, stick='wens', padx=5, pady=5)
 make_digit_button('2').grid(row=1, column=1, stick='wens', padx=5, pady=5)
