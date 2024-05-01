@@ -12,7 +12,7 @@ calc.grid(row=0, column=0, columnspan=4, stick='we', padx=5)
 
 def add_digit(digit):
     value = calc.get()
-    if value[0] == '0':
+    if value[0] == '0' and len(value) == 1:
         value = value[1:]
     calc.delete(0, tk.END)
     calc.insert(0, value + digit)
@@ -22,6 +22,9 @@ def add_operation(operation):
     value = calc.get()
     if value[-1] in '-+*/':
         value = value[:-1]
+    elif '+' in value or '-' in value or '*' in value or '/' in value:
+        calculate()
+        value = calc.get()
     calc.delete(0, tk.END)
     calc.insert(0, value + operation)
 
@@ -30,8 +33,26 @@ def make_digit_button(digit):
     return tk.Button(text=digit, bd=5, font=('Arial', 13), command=lambda: add_digit(digit))
 
 
+def calculate():
+    value = calc.get()
+    if value[-1] in '+-*/':
+        value = value + value[:-1]
+
+    calc.delete(0, tk.END)
+    calc.insert(0, eval(value))
+
+
+def clear():
+    calc.delete(0, tk.END)
+    calc.insert(0, '0')
+
+
 def make_calc_button(operation):
-    return tk.Button(text=operation, bd=5, font=('Arial', 13), fg='red', command=lambda: add_operation(operation))
+    return tk.Button(text=operation, bd=5, font=('Arial', 13), fg='red', command=calculate)
+
+
+def make_clear_button(operation):
+    return tk.Button(text=operation, bd=5, font=('Arial', 13), fg='red', command=clear)
 
 
 def make_operation_button(operation):
@@ -56,6 +77,7 @@ make_operation_button('/').grid(row=4, column=3, stick='wens', padx=5, pady=5)
 
 make_calc_button('=').grid(row=4, column=2, stick='wens', padx=5, pady=5)
 
+make_clear_button('c').grid(row=4, column=1, stick='wens', padx=5, pady=5)
 
 root.grid_columnconfigure(0, minsize=60)
 root.grid_columnconfigure(1, minsize=60)
