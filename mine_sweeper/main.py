@@ -3,7 +3,7 @@ from random import shuffle
 
 
 class MyButton(tk.Button):
-    def __init__(self, master, x, y, number,  *args, **kwargs):
+    def __init__(self, master, x, y, number=0, *args, **kwargs):
         super(MyButton, self).__init__(master, width=2, height=2, font='Calibri 15 bold', *args, **kwargs)
         self.x = x
         self.y = y
@@ -23,15 +23,13 @@ class MineSweeper:
 
     def __init__(self):
         self.buttons = []
-        count = 1
 
-        for row in range(MineSweeper.ROWS):
+        for row in range(MineSweeper.ROWS + 2):
             temp = []
-            for col in range(MineSweeper.COLUMNS):
-                btn = MyButton(MineSweeper.root, x=row, y=col, number=count)
+            for col in range(MineSweeper.COLUMNS + 2):
+                btn = MyButton(MineSweeper.root, x=row, y=col)
                 btn.config(command=lambda button=btn: self.click_btn(button))
                 temp.append(btn)
-                count += 1
             self.buttons.append(temp)
 
     def click_btn(self, clicked_btn: MyButton):
@@ -42,24 +40,37 @@ class MineSweeper:
         clicked_btn.config(state='disabled')
 
     def create_widgets(self):
-        for row in range(MineSweeper.ROWS):
-            for col in range(MineSweeper.COLUMNS):
+        for row in range(MineSweeper.ROWS + 2):
+            for col in range(MineSweeper.COLUMNS + 2):
                 btn = self.buttons[row][col]
                 btn.grid(row=row, column=col)
+
+    def open_all_btn(self):
+        for row in range(MineSweeper.ROWS + 2):
+            for col in range(MineSweeper.COLUMNS + 2):
+                btn = self.buttons[row][col]
+                if btn.is_mine:
+                    btn.config(text='*', highlightbackground="red", disabledforeground='black')
+                else:
+                    btn.config(text=btn.number, disabledforeground='black')
 
     def start(self):
         self.create_widgets()
         self.insert_mines()
         self.print()
+        self.open_all_btn()
         MineSweeper.root.mainloop()
 
     def insert_mines(self):
         index_mines = MineSweeper.get_mines_places(self)
-        print(index_mines)
-        for row_btn in self.buttons:
-            for btn in row_btn:
+        count = 1
+        for row in range(1, MineSweeper.ROWS + 1):
+            for col in range(1, MineSweeper.COLUMNS + 1):
+                btn = self.buttons[row][col]
+                btn.number = count
                 if btn.number in index_mines:
                     btn.is_mine = True
+                count += 1
 
     def print(self):
         for row_btn in self.buttons:
