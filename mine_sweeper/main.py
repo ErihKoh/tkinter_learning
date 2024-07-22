@@ -9,6 +9,7 @@ class MyButton(tk.Button):
         self.y = y
         self.number = number
         self.is_mine = False
+        self.count_bomb = 0
 
     def __repr__(self):
         return f"MyButton x={self.x}, y={self.y}, num={self.number}, mine={self.is_mine}"
@@ -40,8 +41,8 @@ class MineSweeper:
         clicked_btn.config(state='disabled')
 
     def create_widgets(self):
-        for row in range(MineSweeper.ROWS + 2):
-            for col in range(MineSweeper.COLUMNS + 2):
+        for row in range(1, MineSweeper.ROWS + 1):
+            for col in range(1, MineSweeper.COLUMNS + 1):
                 btn = self.buttons[row][col]
                 btn.grid(row=row, column=col)
 
@@ -52,17 +53,18 @@ class MineSweeper:
                 if btn.is_mine:
                     btn.config(text='*', highlightbackground="red", disabledforeground='black')
                 else:
-                    btn.config(text=btn.number, disabledforeground='black')
+                    btn.config(text=btn.count_bomb, disabledforeground='black')
 
     def start(self):
         self.create_widgets()
         self.insert_mines()
+        self.count_mines_in_buttons()
         self.print()
         self.open_all_btn()
         MineSweeper.root.mainloop()
 
     def insert_mines(self):
-        index_mines = MineSweeper.get_mines_places(self)
+        index_mines = MineSweeper.get_mines_places()
         count = 1
         for row in range(1, MineSweeper.ROWS + 1):
             for col in range(1, MineSweeper.COLUMNS + 1):
@@ -76,8 +78,21 @@ class MineSweeper:
         for row_btn in self.buttons:
             print(row_btn)
 
+    def count_mines_in_buttons(self):
+        for row in range(1, MineSweeper.ROWS + 1):
+            for col in range(1, MineSweeper.COLUMNS + 1):
+                btn = self.buttons[row][col]
+                count_bomb = 0
+                if not btn.is_mine:
+                    for row_dx in [-1, 0, 1]:
+                        for col_dx in [-1, 0, 1]:
+                            neighbour = self.buttons[row + row_dx][col + col_dx]
+                            if neighbour.is_mine:
+                                count_bomb += 1
+                btn.count_bomb = count_bomb
+
     @staticmethod
-    def get_mines_places(self):
+    def get_mines_places():
         indexes = list(range(1, MineSweeper.ROWS * MineSweeper.COLUMNS + 1))
         shuffle(indexes)
         return indexes[:MineSweeper.MINES]
