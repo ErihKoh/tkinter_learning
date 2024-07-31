@@ -66,7 +66,7 @@ class MineSweeper:
         while queue:
             current_btn = queue.pop()
             color = colors.get(current_btn.count_bomb, 'black')
-            if current_btn.is_mine:
+            if current_btn.count_bomb:
                 current_btn.config(text=current_btn.count_bomb, disabledforeground=color)
             else:
                 current_btn.config(text='', disabledforeground=color)
