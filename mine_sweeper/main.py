@@ -1,31 +1,8 @@
 import tkinter as tk
 from random import shuffle
 
-colors = {
-    0: '#ffffff',
-    1: '#0000ff',
-    2: '#00ff00',
-    3: '#7732a8',
-    4: '#00ffee',
-    5: '#ff00ff',
-    6: '#ff00cc',
-    7: '#ffaa00',
-    8: '#ff6200',
-}
-
-
-class MyButton(tk.Button):
-    def __init__(self, master, x, y, number=0, *args, **kwargs):
-        super(MyButton, self).__init__(master, width=2, height=2, font='Calibri 15 bold', *args, **kwargs)
-        self.x = x
-        self.y = y
-        self.number = number
-        self.is_mine = False
-        self.count_bomb = 0
-        self.is_open = False
-
-    def __repr__(self):
-        return f"MyButton x={self.x}, y={self.y}, num={self.number}, mine={self.is_mine}"
+from mine_sweeper.colors import colors
+from mine_sweeper.my_button import MyButton
 
 
 class MineSweeper:
